@@ -5,8 +5,8 @@ class Boid {
         this.vel.setMag(3);
         this.acc = createVector();
         this.perception = 100;
-        this.maxForce = 0.05;
-        this.maxSpeed = 4;
+        this.maxForce = 0.1;
+        this.maxSpeed = 8;
     }
     update() {
         this.pos.add(this.vel);
@@ -93,21 +93,21 @@ class Boid {
 
         alignment.mult(alignSlider.value());
         cohesion.mult(cohesionSlider.value());
-        separation.mult(separationSlider.value());
+        separation.mult(separationSlider.value()).mult(0.8);
 
         this.acc.add(alignment);
         this.acc.add(cohesion);
         this.acc.add(separation);
 
-        this.acc.setMag(this.maxForce)
+        // this.acc.setMag(this.maxForce)
     }
     show() {
         strokeWeight(8);
         stroke(255);
         point(this.pos.x, this.pos.y);
 
-        // strokeWeight(1)
-        // fill(255, 50);
-        // ellipse(this.pos.x, this.pos.y, this.perception);
+        noStroke();
+        fill(255, 5);
+        ellipse(this.pos.x, this.pos.y, this.perception);
     }
 }
