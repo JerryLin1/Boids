@@ -8,11 +8,23 @@ class Boid {
         this.maxForce = 0.1;
         this.maxSpeed = 8;
     }
-    update() {
+    update(boids) {
         this.pos.add(this.vel);
         this.vel.add(this.acc);
         this.vel.limit(this.maxSpeed);
         this.acc.mult(0);
+
+        let alignment = this.align(boids);
+        let cohesion = this.cohesion(boids);
+        let separation = this.separation(boids);
+
+        alignment.mult(alignSlider.value());
+        cohesion.mult(cohesionSlider.value());
+        separation.mult(separationSlider.value()).mult(0.8);
+
+        this.acc.add(alignment);
+        this.acc.add(cohesion);
+        this.acc.add(separation);
 
         if (this.pos.x > width) this.pos.x = 0;
         else if (this.pos.x < 0) this.pos.x = width;
@@ -86,21 +98,6 @@ class Boid {
         return steer
     }
 
-    flock(boids) {
-        let alignment = this.align(boids);
-        let cohesion = this.cohesion(boids);
-        let separation = this.separation(boids);
-
-        alignment.mult(alignSlider.value());
-        cohesion.mult(cohesionSlider.value());
-        separation.mult(separationSlider.value()).mult(0.8);
-
-        this.acc.add(alignment);
-        this.acc.add(cohesion);
-        this.acc.add(separation);
-
-        // this.acc.setMag(this.maxForce)
-    }
     show() {
         strokeWeight(8);
         stroke(255);
