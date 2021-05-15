@@ -8,7 +8,7 @@ class Boid {
         this.maxForce = 0.1;
         this.maxSpeed = 8;
     }
-    update(boids) {
+    update(boids, walls) {
         this.pos.add(this.vel);
         this.vel.add(this.acc);
         this.vel.limit(this.maxSpeed);
@@ -17,6 +17,7 @@ class Boid {
         let alignment = this.align(boids);
         let cohesion = this.cohesion(boids);
         let separation = this.separation(boids);
+        let avoidWall = this.avoidWall(walls);
 
         alignment.mult(alignSlider.value());
         cohesion.mult(cohesionSlider.value());
@@ -25,6 +26,7 @@ class Boid {
         this.acc.add(alignment);
         this.acc.add(cohesion);
         this.acc.add(separation);
+        this.acc.add(avoidWall);
 
         if (this.pos.x > width) this.pos.x = 0;
         else if (this.pos.x < 0) this.pos.x = width;
@@ -64,9 +66,9 @@ class Boid {
         if (total > 0) {
             steer.div(total);
 
-            strokeWeight(4);
-            stroke(255, 204, 0);
-            point(steer.x, steer.y);
+            // strokeWeight(4);
+            // stroke(255, 204, 0);
+            // point(steer.x, steer.y);
 
             steer.sub(this.pos)
             steer.setMag(this.maxSpeed);
@@ -97,6 +99,21 @@ class Boid {
         }
         return steer
     }
+    avoidWall(walls) {
+        // Start line using current velocity
+        // If line intersects with wall, get point
+        // Add velocity in opposite direction depending on distance from point of intersection (dist from wall)
+
+        let velVec = this.vel.copy().setMag(this.perception);
+        // console.log(velVec);
+        strokeWeight(2)
+        stroke(255, 50);
+        line(this.pos.x, this.pos.y, this.pos.x + velVec.x, this.pos.y + velVec.y);
+
+        for (let wall of walls) {
+            
+        }
+    }
 
     show() {
         strokeWeight(8);
@@ -105,6 +122,38 @@ class Boid {
 
         noStroke();
         fill(255, 5);
-        ellipse(this.pos.x, this.pos.y, this.perception);
+        ellipse(this.pos.x, this.pos.y, this.perception * 2);
     }
+}
+
+// line intercept math by Paul Bourke http://paulbourke.net/geometry/pointlineplane/
+// Determine the intersection point of two line segments
+// Return FALSE if the lines don't intersect
+function intersect(x1, y1, x2, y2, x3, y3, x4, y4) {
+
+    // Check if none of the lines are of length 0
+    if ((x1 === x2 && y1 === y2) || (x3 === x4 && y3 === y4)) {
+        return false
+    }
+
+    denominator = ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1))
+
+    // Lines are parallel
+    if (denominator === 0) {
+        return false
+    }
+
+    let ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denominator
+    let ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denominator
+
+    // is the intersection along the segments
+    if (ua < 0 || ua > 1 || ub < 0 || ub > 1) {
+        return false
+    }
+
+    // Return a object with the x and y coordinates of the intersection
+    let x = x1 + ua * (x2 - x1)
+    let y = y1 + ua * (y2 - y1)
+
+    return { x, y }
 }

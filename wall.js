@@ -1,7 +1,7 @@
 class Wall {
-    constructor(startPos, endPos) {
-        this.startPos = startPos;
-        this.endPos = endPos;
+    constructor(pos1, pos2) {
+        this.pos1 = pos1;
+        this.pos2 = pos2;
     }
     show() {
         

@@ -27,7 +27,7 @@ function draw() {
 
     background(0);
     for (let boid of flock) {
-        boid.update(flock);
+        boid.update(flock, walls);
 
         boid.show();
     }
