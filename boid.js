@@ -17,7 +17,7 @@ class Boid {
         let alignment = this.align(boids);
         let cohesion = this.cohesion(boids);
         let separation = this.separation(boids);
-        let avoidWall = this.avoidWall(walls);
+        // let avoidWall = this.avoidWall(walls);
 
         alignment.mult(alignSlider.value());
         cohesion.mult(cohesionSlider.value());
@@ -26,7 +26,7 @@ class Boid {
         this.acc.add(alignment);
         this.acc.add(cohesion);
         this.acc.add(separation);
-        this.acc.add(avoidWall);
+        // this.acc.add(avoidWall);
 
         if (this.pos.x > width) this.pos.x = 0;
         else if (this.pos.x < 0) this.pos.x = width;
@@ -104,6 +104,7 @@ class Boid {
         // If line intersects with wall, get point
         // Add velocity in opposite direction depending on distance from point of intersection (dist from wall)
 
+        let steer = createVector();
         let velVec = this.vel.copy().setMag(this.perception);
         // console.log(velVec);
         strokeWeight(2)
@@ -111,13 +112,29 @@ class Boid {
         line(this.pos.x, this.pos.y, this.pos.x + velVec.x, this.pos.y + velVec.y);
 
         for (let wall of walls) {
-            
+            let poi = intersect(this.pos.x, this.pos.y, this.pos.x + velVec.x, this.pos.y + velVec.y, wall.pos1.x, wall.pos1.y, wall.pos2.x, wall.pos2.y);
+            if (poi != false) {
+                steer = velVec.mult(-1);
+                let dist = this.pos.dist(poi);
+                steer.mult(1 / dist);
+                // point of intersection
+                strokeWeight(20);
+                stroke(255, 100);
+                point(poi.x, poi.y);
+
+                strokeWeight(1)
+                stroke(255, 50);
+                line(this.pos.x, this.pos.y, this.pos.x + steer.x, this.pos.y + steer.y);
+            }
         }
+        return steer;
     }
 
     show() {
         strokeWeight(8);
-        stroke(255);
+        stroke(255, 50);
+        // let draw = this.vel.setMag(1);
+        // triangle(this.pos.x - 2, this.pos.y - 3, this.pos.x + 2, this.pos.y - 3, this.pos.x, this.pos.y-8);
         point(this.pos.x, this.pos.y);
 
         noStroke();
@@ -155,5 +172,5 @@ function intersect(x1, y1, x2, y2, x3, y3, x4, y4) {
     let x = x1 + ua * (x2 - x1)
     let y = y1 + ua * (y2 - y1)
 
-    return { x, y }
+    return createVector(x, y);
 }
