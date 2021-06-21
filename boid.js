@@ -132,7 +132,7 @@ class Boid {
 
     show() {
         strokeWeight(8);
-        stroke(255, 50);
+        stroke(255);
         // let draw = this.vel.setMag(1);
         // triangle(this.pos.x - 2, this.pos.y - 3, this.pos.x + 2, this.pos.y - 3, this.pos.x, this.pos.y-8);
         point(this.pos.x, this.pos.y);
